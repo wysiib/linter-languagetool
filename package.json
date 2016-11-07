@@ -1,0 +1,28 @@
+{
+  "name": "linter-languagetool",
+  "main": "./lib/linter-languagetool",
+  "version": "0.1.0",
+  "description": "Checks text using languagetool",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wysiib/linter-languagetool.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wysiib/linter-languagetool/issues"
+  },
+  "homepage": "https://github.com/wysiib/linter-languagetool",
+  "devDependencies": {
+    "coffeelint": "^1.10.1"
+  },
+  "engines": {
+    "atom": ">=1.4.0 <2.0.0"
+  },
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
+    }
+  }
+}
