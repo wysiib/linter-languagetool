@@ -37,7 +37,7 @@ module.exports = class LinterProvider
         http = require('https')
         apipath = '/api'
         lthostname = 'languagetool.org'
-        ltport = 80
+        ltport = 443
 
       post_data = querystring.stringify {
         'language': 'auto'
