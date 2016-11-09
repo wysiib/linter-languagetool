@@ -1,4 +1,24 @@
+child_process = require 'child_process'
+querystring = require 'querystring'
+
+
 module.exports = class LinterProvider
+  @server_started: false
+
+  startserver = () ->
+    if not server_started
+      server_started = true
+      ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
+      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer "$@"', (error, stdout, stderr) ->
+        if error
+          console.error error
+        console.log stdout
+        console.log stderr
+
+        ltserver.stdout.on 'data', (data) ->
+          console.log data
+
+
   lint: (TextEditor) ->
     new Promise (Resolve) ->
       toReturn = []
@@ -7,18 +27,36 @@ module.exports = class LinterProvider
       editorContent = TextEditor.getText()
       textBuffer = TextEditor.getBuffer()
 
-      https = require('https');
+      if atom.config.get 'linter-languagetool.languagetoolServerPath'
+        startserver()
+        lthostname = 'localhost'
+        http = require('http')
+        apipath = ''
+        ltport = 8081
+      else
+        http = require('https')
+        apipath = '/api'
+        lthostname = 'languagetool.org'
+        ltport = 80
+
+      post_data = querystring.stringify {
+        'language' : 'auto'
+        'text': editorContent
+      }
+
       options = {
-        hostname: 'languagetool.org',
-        path: '/api/v2/check?language=auto&text=' + encodeURIComponent editorContent,
-        method: 'POST',
+        hostname: lthostname
+        path: "#{apipath}/v2/check"
+        port: ltport
+        method: 'POST'
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
           'Accept': 'application/json'
+          'Content-Length': Buffer.byteLength(post_data)
         }
       };
 
-      req = https.request options, (res) ->
+      req = http.request options, (res) ->
         res.on 'data', (chunk) ->
           jsonObject = JSON.parse chunk
           matches = jsonObject["matches"]
@@ -35,4 +73,5 @@ module.exports = class LinterProvider
               severity: 'error'
             }
           Resolve toReturn
+      req.write(post_data);
       req.end()

@@ -1,3 +1,6 @@
+## 0.3.0
+* add ability to use local server instead of api
+
 ## 0.2.0
 * fix position reported by linter
 

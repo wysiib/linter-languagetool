@@ -1,4 +1,10 @@
 module.exports = LinterLanguagetool =
+  config:
+    languagetoolServerPath:
+      title: 'Path to local languagetool-server.jar'
+      description: 'If given, the linter tries to start a local languagetool server and connect to it. If left blank, the public languagetool API is used instead.'
+      type: 'string'
+      default: ''
 
   provideLinter: ->
     LinterProvider = require './linter-provider'
