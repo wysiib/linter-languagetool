@@ -5,7 +5,7 @@ querystring = require 'querystring'
 module.exports = class LinterProvider
   @server_started: false
 
-  startserver = () ->
+  startserver = ->
     if not server_started
       server_started = true
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
@@ -40,7 +40,7 @@ module.exports = class LinterProvider
         ltport = 80
 
       post_data = querystring.stringify {
-        'language' : 'auto'
+        'language': 'auto'
         'text': editorContent
       }
 
@@ -54,7 +54,7 @@ module.exports = class LinterProvider
           'Accept': 'application/json'
           'Content-Length': Buffer.byteLength(post_data)
         }
-      };
+      }
 
       req = http.request options, (res) ->
         res.on 'data', (chunk) ->
@@ -69,9 +69,9 @@ module.exports = class LinterProvider
               type: 'Error',
               text: match['message'],
               filePath: editorPath,
-              range: [startPos,endPos],
+              range: [startPos, endPos],
               severity: 'error'
             }
           Resolve toReturn
-      req.write(post_data);
+      req.write(post_data)
       req.end()
