@@ -1,5 +1,6 @@
 ## 0.3.0
 * add ability to use local server instead of api
+* add preference to provide the grammar scopes languagetool should be applied to
 
 ## 0.2.0
 * fix position reported by linter
