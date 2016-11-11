@@ -1,3 +1,6 @@
+## 0.3.2
+* fix communication with languagetool server when checking large files
+
 ## 0.3.1
 * fix port number of public language tool server
 
