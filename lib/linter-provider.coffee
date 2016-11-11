@@ -60,7 +60,7 @@ module.exports = class LinterProvider
       req = http.request options, (res) ->
         res.on 'data', (chunk) ->
           received = received + chunk
-        res.on 'end', () ->
+        res.on 'end', ->
           jsonObject = JSON.parse received
           matches = jsonObject["matches"]
           for match in matches
