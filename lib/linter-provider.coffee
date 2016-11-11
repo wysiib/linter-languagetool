@@ -21,6 +21,7 @@ module.exports = class LinterProvider
 
   lint: (TextEditor) ->
     new Promise (Resolve) ->
+      received = ""
       toReturn = []
 
       editorPath = TextEditor.getPath()
@@ -58,7 +59,9 @@ module.exports = class LinterProvider
 
       req = http.request options, (res) ->
         res.on 'data', (chunk) ->
-          jsonObject = JSON.parse chunk
+          received = received + chunk
+        res.on 'end', () ->
+          jsonObject = JSON.parse received
           matches = jsonObject["matches"]
           for match in matches
             offset = match['offset']
@@ -73,5 +76,6 @@ module.exports = class LinterProvider
               severity: 'error'
             }
           Resolve toReturn
+
       req.write(post_data)
       req.end()
