@@ -1,6 +1,7 @@
 ## 0.4.0
 * linter v2 api
 * add preference for mother tongue (thanks @hesstobi)
+* support suggesting changes (thanks @hesstobi)
 
 ## 0.3.2
 * fix communication with languagetool server when checking large files
