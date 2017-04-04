@@ -11,6 +11,10 @@ module.exports = LinterLanguagetool =
       default: ['text.tex.latex', 'source.asciidoc', 'source.gfm', 'text.git-commit', 'text.plain', 'text.plain.null-grammar']
       items:
         type: 'string'
+    motherTongue:
+      type: 'string'
+      description: 'A language code of the user\'s native language, enabling false friends checks for some language pairs.'
+      default: require('electron').remote.app.getLocale()
 
   provideLinter: ->
     LinterProvider = require './linter-provider'
