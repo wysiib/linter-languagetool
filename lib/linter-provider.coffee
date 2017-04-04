@@ -43,6 +43,7 @@ module.exports = class LinterProvider
       post_data = querystring.stringify {
         'language': 'auto'
         'text': editorContent
+        'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
       }
 
       options = {
@@ -68,14 +69,34 @@ module.exports = class LinterProvider
             length = match['length']
             startPos = textBuffer.positionForCharacterIndex offset
             endPos = textBuffer.positionForCharacterIndex(offset + length)
-            toReturn.push {
-              severity: 'error',
-              excerpt: match['message'],
+            
+            description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
+            if match['shortMessage']
+              description = "#{match['message']}\n\n#{description}"
+            else
+                    
+            replacements = match['replacements'].map (rep) ->
+              {
+                title: rep.value,
+                position: [startPos, endPos],
+                replaceWith: rep.value,
+              }
+        
+            message = {
               location: {
                 file: editorPath,
-                position: [startPos, endPos]
-              }
+                position: [startPos, endPos],
+              },
+              severity: 'error',
+              description: description,
+              solutions: replacements,
+              excerpt: match['shortMessage'] or match['message']
             }
+            
+            if match['rule']['urls']
+              message['url'] = match['rule']['urls'][0]['value']
+                        
+            toReturn.push message
           Resolve toReturn
 
       req.write(post_data)
