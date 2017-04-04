@@ -69,11 +69,12 @@ module.exports = class LinterProvider
             startPos = textBuffer.positionForCharacterIndex offset
             endPos = textBuffer.positionForCharacterIndex(offset + length)
             toReturn.push {
-              type: 'Error',
-              text: match['message'],
-              filePath: editorPath,
-              range: [startPos, endPos],
-              severity: 'error'
+              severity: 'error',
+              excerpt: match['message'],
+              location: {
+                file: editorPath,
+                position: [startPos, endPos]
+              }
             }
           Resolve toReturn
 

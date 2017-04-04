@@ -1,3 +1,6 @@
+## 0.4.0
+* linter v2 api
+
 ## 0.3.2
 * fix communication with languagetool server when checking large files
 
