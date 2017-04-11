@@ -22,7 +22,7 @@ module.exports = LinterLanguagetool =
     return {
       name: 'languagetool'
       scope: 'file'
-      lintsOnChange: true
+      lintsOnChange: false
       grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
       lint: provider.lint
     }
