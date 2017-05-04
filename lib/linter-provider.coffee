@@ -6,7 +6,7 @@ module.exports = class LinterProvider
   server_started = false
 
   startserver = ->
-    if server_started == false
+    if server_started is false
       server_started = true
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
       ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer --public "$@"', (error, stdout, stderr) ->
