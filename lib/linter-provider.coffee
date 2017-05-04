@@ -3,13 +3,13 @@ querystring = require 'querystring'
 
 
 module.exports = class LinterProvider
-  @server_started: false
+  server_started = false
 
   startserver = ->
-    if not server_started
+    if server_started == false
       server_started = true
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
-      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer "$@"', (error, stdout, stderr) ->
+      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer --public "$@"', (error, stdout, stderr) ->
         if error
           console.error error
         console.log stdout
@@ -32,11 +32,11 @@ module.exports = class LinterProvider
         startserver()
         lthostname = 'localhost'
         http = require('http')
-        apipath = ''
+        apipath = '/v2'
         ltport = 8081
       else
         http = require('https')
-        apipath = '/api'
+        apipath = '/api/v2'
         lthostname = 'languagetool.org'
         ltport = 443
 
@@ -48,7 +48,7 @@ module.exports = class LinterProvider
 
       options = {
         hostname: lthostname
-        path: "#{apipath}/v2/check"
+        path: "#{apipath}/check"
         port: ltport
         method: 'POST'
         headers: {

@@ -1,3 +1,7 @@
+## 0.4.1
+* disable lints on change for performance reasons
+* changes needed for languagetool v3.6
+
 ## 0.4.0
 * linter v2 api
 * add preference for mother tongue (thanks @hesstobi)
