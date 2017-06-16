@@ -1,3 +1,6 @@
+## 0.4.4
+* intermediate version fixing git tags / apm published version
+
 ## 0.4.3
 * add preference for "language variants" (again, credits go to @hesstobi)
 
