@@ -1,3 +1,6 @@
+## 0.4.3
+* add preference for "language variants" (again, credits go to @hesstobi)
+
 ## 0.4.2
 * add preference for "lint on change" (again, credits go to @hesstobi)
 
