@@ -15,6 +15,10 @@ module.exports = LinterLanguagetool =
       type: 'string'
       description: 'A language code of the user\'s native language, enabling false friends checks for some language pairs.'
       default: require('electron').remote.app.getLocale()
+    lintsOnChange:
+      type: 'boolean'
+      description: 'If enabled the linter will run on every change on the file.'
+      default: false
 
   provideLinter: ->
     LinterProvider = require './linter-provider'
@@ -22,7 +26,7 @@ module.exports = LinterLanguagetool =
     return {
       name: 'languagetool'
       scope: 'file'
-      lintsOnChange: false
+      lintsOnChange: atom.config.get 'linter-languagetool.lintsOnChange'
       grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
       lint: provider.lint
     }
