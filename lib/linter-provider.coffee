@@ -40,12 +40,16 @@ module.exports = class LinterProvider
         lthostname = 'languagetool.org'
         ltport = 443
 
-      post_data = querystring.stringify {
+      post_data_dict = {
         'language': 'auto'
         'text': editorContent
         'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
-        'preferredVariants': atom.config.get('linter-languagetool.preferredVariants').join()
       }
+
+      if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
+        post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
+
+      post_data = querystring.stringify post_data_dict
 
       options = {
         hostname: lthostname
