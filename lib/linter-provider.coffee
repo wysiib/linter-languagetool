@@ -44,6 +44,7 @@ module.exports = class LinterProvider
         'language': 'auto'
         'text': editorContent
         'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
+        'preferredVariants': atom.config.get('linter-languagetool.preferredVariants').join()
       }
 
       options = {
@@ -69,19 +70,19 @@ module.exports = class LinterProvider
             length = match['length']
             startPos = textBuffer.positionForCharacterIndex offset
             endPos = textBuffer.positionForCharacterIndex(offset + length)
-            
+
             description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
             if match['shortMessage']
               description = "#{match['message']}\n\n#{description}"
             else
-                    
+
             replacements = match['replacements'].map (rep) ->
               {
                 title: rep.value,
                 position: [startPos, endPos],
                 replaceWith: rep.value,
               }
-        
+
             message = {
               location: {
                 file: editorPath,
@@ -92,10 +93,10 @@ module.exports = class LinterProvider
               solutions: replacements,
               excerpt: match['shortMessage'] or match['message']
             }
-            
+
             if match['rule']['urls']
               message['url'] = match['rule']['urls'][0]['value']
-                        
+
             toReturn.push message
           Resolve toReturn
 
