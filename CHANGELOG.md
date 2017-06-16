@@ -1,3 +1,6 @@
+## 0.4.2
+* add preference for "lint on change" (again, credits go to @hesstobi)
+
 ## 0.4.1
 * disable lints on change for performance reasons
 * changes needed for languagetool v3.6
