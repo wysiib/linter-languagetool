@@ -28,4 +28,25 @@ describe('The languagetool-linter for AtomLinter', () => {
       });
     });
   });
+
+  it('checks the example text taken from the languagetool homepage with variant en-GB', () => {
+    waitsForPromise(() => {
+      atom.config.set('linter-languagetool.preferredVariants',['en-GB'])
+      return atom.workspace.open(__dirname + '/test_files/languagetool-hp-test.txt').then(editor => {
+        return lint(editor).then(messages => {
+          expect(messages.length).toEqual(9);
+
+          expect(messages[0].severity).toBeDefined();
+          expect(messages[0].severity).toEqual('error');
+          expect(messages[0].excerpt).toBeDefined();
+          expect(messages[0].excerpt).toEqual('Spelling mistake');
+          expect(messages[0].location.file).toBeDefined();
+          expect(messages[0].location.file).toMatch(/.+languagetool-hp-test\.txt$/);
+          expect(messages[0].location.position).toBeDefined();
+          expect(messages[0].location.position.length).toEqual(2);
+          expect(messages[0].location.position).toEqual([[1, 10], [1, 17]]);
+        });
+      });
+    });
+  });
 });

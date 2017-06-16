@@ -11,6 +11,12 @@ module.exports = LinterLanguagetool =
       default: ['text.tex.latex', 'source.asciidoc', 'source.gfm', 'text.git-commit', 'text.plain', 'text.plain.null-grammar']
       items:
         type: 'string'
+    preferredVariants:
+      type: 'array'
+      description: 'List of preferred language variants. The language detector used with language=auto can detect e.g. English, but it cannot decide whether British English or American English is used. Thus this parameter can be used to specify the preferred variants like en-GB and de-AT. Only available with language=auto.'
+      default: []
+      items:
+        type: 'string'
     motherTongue:
       type: 'string'
       description: 'A language code of the user\'s native language, enabling false friends checks for some language pairs.'
