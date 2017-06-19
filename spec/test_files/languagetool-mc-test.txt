@@ -1,0 +1,7 @@
+% !TeX spellcheck = de_DE
+
+Paste your own text here and click the 'Check Text' button.
+Click the colored phrases for details on potential errors.
+
+
+Füghen Sie hier Ihren Text ein.

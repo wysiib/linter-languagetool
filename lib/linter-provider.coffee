@@ -19,6 +19,22 @@ module.exports = class LinterProvider
           console.log data
 
 
+  magicCommentLanguageSetting = (content) ->
+    magicCommentPattern = ///
+      \%\s*!TeX\s* # Starting with %!TeX
+      spellcheck\s*=\s*
+      ([\w-]+) # capture language setting
+    ///ig # ignore Case
+
+    match = magicCommentPattern.exec content
+    if match
+      lang = match[1].replace /_/, '-'
+    else
+      'auto'
+
+
+
+
   lint: (TextEditor) ->
     new Promise (Resolve) ->
       received = ""
@@ -40,8 +56,11 @@ module.exports = class LinterProvider
         lthostname = 'languagetool.org'
         ltport = 443
 
+      language = magicCommentLanguageSetting editorContent
+      console.log language
+
       post_data_dict = {
-        'language': 'auto'
+        'language': language
         'text': editorContent
         'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
       }
