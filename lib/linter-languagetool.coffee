@@ -5,6 +5,11 @@ module.exports = LinterLanguagetool =
       description: 'If given, the linter tries to start a local languagetool server and connect to it. If left blank, the public languagetool API is used instead.'
       type: 'string'
       default: ''
+    nGramDataPath:
+      title: 'Path to the n gram directory'
+      description: 'If given LanguageTool can etect errors with words that are often confused, like *their* and *there*. See [LanguageTool Wiki](http://wiki.languagetool.org/finding-errors-using-n-gram-data) for more information'
+      type: 'string'
+      default: ''
     grammerScopes:
       type: 'array'
       description: 'This preference holds a list of grammar scopes languagetool should be applied to.'
