@@ -1,3 +1,7 @@
+## 0.5.0
+* avoid starting a publicly reachable languagetool server
+* add preference for n-gram path (thanks @hesstobi)
+
 ## 0.4.4
 * intermediate version fixing git tags / apm published version
 
