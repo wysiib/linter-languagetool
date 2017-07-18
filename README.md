@@ -1,7 +1,7 @@
 linter-languagetool
 =========================
 
-This linter plugin for [Linter](https://github.com/AtomLinter/Linter) uses [languagetool](http://www.swi-prolog.org) for spell and grammar checking.
+This linter plugin for [Linter](https://github.com/AtomLinter/Linter) uses [languagetool](https://languagetool.org) for spell and grammar checking.
 
 ## Installation
 Call
