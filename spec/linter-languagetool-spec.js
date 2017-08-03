@@ -49,4 +49,25 @@ describe('The languagetool-linter for AtomLinter', () => {
       });
     });
   });
+
+  it('checks an mixed language example text taken from the languagetool homepage with TeX magic comment to define the language', () => {
+    waitsForPromise(() => {
+      return atom.workspace.open(__dirname + '/test_files/languagetool-mc-test.txt').then(editor => {
+        return lint(editor).then(messages => {
+          expect(messages.length).toEqual(22);
+
+          expect(messages[21].severity).toBeDefined();
+          expect(messages[21].severity).toEqual('error');
+          expect(messages[21].excerpt).toBeDefined();
+          expect(messages[21].excerpt).toEqual('Rechtschreibfehler');
+          expect(messages[21].location.file).toBeDefined();
+          expect(messages[21].location.file).toMatch(/.+languagetool-mc-test\.txt$/);
+          expect(messages[21].location.position).toBeDefined();
+          expect(messages[21].location.position.length).toEqual(2);
+          expect(messages[21].location.position).toEqual([[6, 0], [6, 6]]);
+        });
+      });
+    });
+  });
+
 });
