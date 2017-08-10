@@ -4,6 +4,34 @@ querystring = require 'querystring'
 
 module.exports = class LinterProvider
   server_started = false
+  categries_map = {
+    'CASING': 'error'
+    'COLLOCATIONS': 'error'
+    'COLLOQUIALISMS': 'info'
+    'COMPOUNDING': 'error'
+    'CONFUSED_WORDS': 'info'
+    'CORRESPONDENCE': 'error'
+    'EMPFOHLENE_RECHTSCHREIBUNG': 'info'
+    'FALSE_FRIENDS': 'info'
+    'GENDER_NEUTRALITY': 'info'
+    'GRAMMAR': 'error'
+    'HILFESTELLUNG_KOMMASETZUNG': 'warning'
+    'IDIOMS': 'info'
+    'MISC': 'warning'
+    'MISUSED_TERMS_EU_PUBLICATIONS': 'warning'
+    'NONSTANDARD_PHRASES': 'info'
+    'PLAIN_ENGLISH': 'info'
+    'PROPER_NOUNS': 'error'
+    'PUNCTUATION': 'error'
+    'REDUNDANCY': 'error'
+    'REGIONALISMS': 'info'
+    'REPETITIONS': 'info'
+    'SEMANTICS': 'warning'
+    'STYLE': 'info'
+    'TYPOGRAPHY': 'warning'
+    'TYPOS': 'error'
+    'WIKIPEDIA': 'info'
+  }
 
   startserver = ->
     if server_started is false
@@ -89,13 +117,12 @@ module.exports = class LinterProvider
                 position: [startPos, endPos],
                 replaceWith: rep.value,
               }
-
             message = {
               location: {
                 file: editorPath,
                 position: [startPos, endPos],
               },
-              severity: 'error',
+              severity: categries_map[match['rule']['category']['id']] or 'error'
               description: description,
               solutions: replacements,
               excerpt: match['shortMessage'] or match['message']
