@@ -1,6 +1,7 @@
 ## 0.5.0
 * avoid starting a publicly reachable languagetool server
 * add preference for n-gram path (thanks @hesstobi)
+* severity based on languagetool rules for German and English (thanks @hesstobi)
 
 ## 0.4.4
 * intermediate version fixing git tags / apm published version
