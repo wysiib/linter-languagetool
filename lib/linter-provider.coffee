@@ -79,6 +79,8 @@ module.exports = class LinterProvider
 
       if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
         post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
+      if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
+        post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
 
       post_data = querystring.stringify post_data_dict
 
