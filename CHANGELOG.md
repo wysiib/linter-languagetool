@@ -1,3 +1,6 @@
+## 0.5.1
+* report answer from LanguageTool server in case JSON parsing fails
+
 ## 0.5.0
 * avoid starting a publicly reachable languagetool server
 * add preference for n-gram path (thanks @hesstobi)
