@@ -1,3 +1,6 @@
+## 0.5.2
+* improved error handling
+
 ## 0.5.1
 * report answer from LanguageTool server in case JSON parsing fails
 
