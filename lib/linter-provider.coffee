@@ -104,6 +104,7 @@ module.exports = class LinterProvider
             jsonObject = JSON.parse received
           catch error
             atom.notifications.addError("Invalid output received from LanguageTool server", {detail: received})
+            return Resolve toReturn
 
           matches = jsonObject["matches"]
           for match in matches
