@@ -1,3 +1,6 @@
+## 0.6.0
+* replace n-gram data path option by config file option (see issue #17)
+
 ## 0.5.2
 * improved error handling
 

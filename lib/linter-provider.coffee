@@ -37,8 +37,8 @@ module.exports = class LinterProvider
     if server_started is false
       server_started = true
       ltoptions = ''
-      if atom.config.get 'linter-languagetool.nGramDataPath'
-        ltoptions = ltoptions + ' --languageModel ' + atom.config.get 'linter-languagetool.nGramDataPath'
+      if atom.config.get 'linter-languagetool.configFilePath'
+        ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
       ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer ' + ltoptions +  ' "$@" ', (error, stdout, stderr) ->
         if error
