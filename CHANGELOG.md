@@ -1,3 +1,6 @@
+## 0.6.1
+* add preference for disabled rules
+
 ## 0.6.0
 * replace n-gram data path option by config file option (see issue #17)
 
