@@ -28,6 +28,12 @@ module.exports = LinterLanguagetool =
       default: []
       items:
         type: 'string'
+    disabledRules:
+      type: 'array'
+      description: 'List of LanguageTool rules to be disabled.'
+      default: []
+      items:
+        type: 'string'
     motherTongue:
       type: 'string'
       description: 'A language code of the user\'s native language, enabling false friends checks for some language pairs.'
