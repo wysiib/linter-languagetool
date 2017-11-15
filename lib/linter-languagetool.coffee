@@ -5,6 +5,11 @@ module.exports = LinterLanguagetool =
       description: 'If given, the linter tries to start a local languagetool server and connect to it. If left blank, the public languagetool API is used instead.'
       type: 'string'
       default: ''
+    languagetoolServerPort:
+      title: 'Port for local languagetool-server.jar'
+      description: 'Sets the port on which the local languagetool server will listen.'
+      type: 'number'
+      default: 8081
     configFilePath:
       title: 'Path to a config file'
       description: 'Path to a configuration file for the LanguageTool server. Can be used to provide the path to the n-gram data to LanugageTool. If given, LanguageTool can detect errors with words that are often confused, like *their* and *there*. See [LanguageTool Wiki](http://wiki.languagetool.org/finding-errors-using-n-gram-data) for more information'

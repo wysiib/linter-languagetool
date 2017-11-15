@@ -39,6 +39,8 @@ module.exports = class LinterProvider
       ltoptions = ''
       if atom.config.get 'linter-languagetool.configFilePath'
         ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
+      if atom.config.get 'linter-languagetool.languagetoolServerPort'
+        ltoptions = ltoptions + ' --port ' + atom.config.get 'linter-languagetool.languagetoolServerPort'
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
       ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer ' + ltoptions +  ' "$@" ', (error, stdout, stderr) ->
         if error
@@ -64,7 +66,7 @@ module.exports = class LinterProvider
         lthostname = 'localhost'
         http = require('http')
         apipath = '/v2'
-        ltport = 8081
+        ltport = atom.config.get 'linter-languagetool.languagetoolServerPort'
       else
         http = require('https')
         apipath = '/api/v2'
