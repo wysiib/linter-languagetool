@@ -31,6 +31,23 @@ module.exports = class LinterProvider
     'TYPOS': 'error'
     'WIKIPEDIA': 'info'
   }
+  
+  getPostDataDict= (editorContent) ->
+    
+    post_data_dict = {
+      'language': 'auto'
+      'text': editorContent
+      'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
+    }
+    
+    if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
+      post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
+    if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
+      post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
+    if (atom.config.get 'linter-languagetool.disabledRules').length > 0
+      post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
+      
+    return post_data_dict
 
   lint: (TextEditor) ->
     new Promise (Resolve) ->
@@ -52,20 +69,7 @@ module.exports = class LinterProvider
         lthostname = 'languagetool.org'
         ltport = 443
 
-      post_data_dict = {
-        'language': 'auto'
-        'text': editorContent
-        'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
-      }
-
-      if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
-        post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
-      if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
-        post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
-      if (atom.config.get 'linter-languagetool.disabledRules').length > 0
-        post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
-
-      post_data = querystring.stringify post_data_dict
+      post_data = querystring.stringify getPostDataDict(editorContent)
 
       options = {
         hostname: lthostname
