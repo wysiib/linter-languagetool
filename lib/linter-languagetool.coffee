@@ -1,3 +1,5 @@
+{CompositeDisposable} = require 'atom'
+
 module.exports = LinterLanguagetool =
   config:
     languagetoolServerPath:
@@ -48,11 +50,27 @@ module.exports = LinterLanguagetool =
       default: false
       
   activate: ->
+    @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
+    LTInfoView = require './lt-status-view'
+    @ltInfo = new LTInfoView()
     
+  
   deactivate: ->
     lthelper = require './ltserver-helper'
-    lthelper.destroy()
+    lthelper?.destroy()
+    
+    @ltInfo?.destroy()
+    @ltInfo = null
+    
+    @statusBarTile?.destroy()
+    @statusBarTile = null
+    
+    @subscriptions?.dispose()
+    @subscriptions = null
+    
+  consumeStatusBar: (statusBar) ->
+    @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
   provideLinter: ->
     LinterProvider = require './linter-provider'

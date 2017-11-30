@@ -1,4 +1,4 @@
-{BufferedProcess, CompositeDisposable} = require 'atom'
+{BufferedProcess, CompositeDisposable, Emitter} = require 'atom'
 url = require 'url'
 rp = require 'request-promise-native'
 
@@ -7,6 +7,7 @@ class LTServerHelper
   
   constructor: ->
     @disposables = new CompositeDisposable
+    @emitter = new Emitter
     @ltserver = undefined
     @url = PUBLIC_LT_URL
     @ltinfo = undefined
@@ -23,7 +24,12 @@ class LTServerHelper
   destroy: ->
     @stopserver()
     @disposables.dispose()
+    @emitter.dispose()
     
+  onDidChangeLTInfo: (callback) ->
+    @emitter.on 'did-change-ltinfo', callback
+  
+  
   handlelanguagetoolServerPathSetting: ->
     path = atom.config.get 'linter-languagetool.languagetoolServerPath'
     @stopserver()
@@ -57,11 +63,14 @@ class LTServerHelper
       rp(options)
         .then( (data) =>
           @ltinfo = data.software
+          @emitter.emit 'did-change-ltinfo', @ltinfo
           resolve(@ltinfo)
         )
         .catch( (err) =>
           console.log(err)
           @ltinfo = undefined
+          @emitter.emit 'did-change-ltinfo', @ltinfo
+          
           if @url is PUBLIC_LT_URL
             # The public server fails
             atom.notifications.addError("""The public languagetool server is
