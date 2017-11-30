@@ -48,6 +48,44 @@ module.exports = class LinterProvider
       post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
       
     return post_data_dict
+    
+  linterMessagesForData= (data, textBuffer, editorPath) ->
+    messages = []
+        
+    matches = data["matches"]
+    for match in matches
+      offset = match['offset']
+      length = match['length']
+      startPos = textBuffer.positionForCharacterIndex offset
+      endPos = textBuffer.positionForCharacterIndex(offset + length)
+
+      description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
+      if match['shortMessage']
+        description = "#{match['message']}\n\n#{description}"
+      else
+
+      replacements = match['replacements'].map (rep) ->
+        {
+          title: rep.value,
+          position: [startPos, endPos],
+          replaceWith: rep.value,
+        }
+      message = {
+        location: {
+          file: editorPath,
+          position: [startPos, endPos],
+        },
+        severity: categries_map[match['rule']['category']['id']] or 'error'
+        description: description,
+        solutions: replacements,
+        excerpt: match['shortMessage'] or match['message']
+      }
+
+      if match['rule']['urls']
+        message['url'] = match['rule']['urls'][0]['value']
+
+      messages.push message
+    return messages
 
   lint: (TextEditor) ->
     new Promise (Resolve) ->
@@ -93,40 +131,8 @@ module.exports = class LinterProvider
             atom.notifications.addError("Invalid output received from LanguageTool server", {detail: received})
             return Resolve toReturn
 
-          matches = jsonObject["matches"]
-          for match in matches
-            offset = match['offset']
-            length = match['length']
-            startPos = textBuffer.positionForCharacterIndex offset
-            endPos = textBuffer.positionForCharacterIndex(offset + length)
-
-            description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
-            if match['shortMessage']
-              description = "#{match['message']}\n\n#{description}"
-            else
-
-            replacements = match['replacements'].map (rep) ->
-              {
-                title: rep.value,
-                position: [startPos, endPos],
-                replaceWith: rep.value,
-              }
-            message = {
-              location: {
-                file: editorPath,
-                position: [startPos, endPos],
-              },
-              severity: categries_map[match['rule']['category']['id']] or 'error'
-              description: description,
-              solutions: replacements,
-              excerpt: match['shortMessage'] or match['message']
-            }
-
-            if match['rule']['urls']
-              message['url'] = match['rule']['urls'][0]['value']
-
-            toReturn.push message
-          Resolve toReturn
+          messages = linterMessagesForData(jsonObject, textBuffer, editorPath)
+          Resolve(messages)
 
       req.write(post_data)
       req.end()
