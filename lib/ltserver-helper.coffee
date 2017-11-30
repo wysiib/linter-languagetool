@@ -5,6 +5,8 @@ class LTServerHelper
   constructor: ->
     @disposables = new CompositeDisposable
     @ltserver = undefined
+    @url = 'https://languagetool.org/api/v2/check'
+    
     if atom.config.get 'linter-languagetool.languagetoolServerPath'
       @startserver()
     
@@ -41,8 +43,11 @@ class LTServerHelper
         detached: true,
         stdio: 'ignore'
     })
+    
+    @url = 'http://localhost:8081/v2/check'
      
   stopserver: ->
     @ltserver?.kill()
+    @url = 'https://languagetool.org/api/v2/check'
     
 module.exports = new LTServerHelper()

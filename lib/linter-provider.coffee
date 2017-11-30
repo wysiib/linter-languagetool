@@ -1,5 +1,5 @@
-child_process = require 'child_process'
-querystring = require 'querystring'
+rp = require 'request-promise-native'
+lthelper = require './ltserver-helper'
 
 
 module.exports = class LinterProvider
@@ -88,51 +88,27 @@ module.exports = class LinterProvider
     return messages
 
   lint: (TextEditor) ->
-    new Promise (Resolve) ->
-      received = ""
-      toReturn = []
-
-      editorPath = TextEditor.getPath()
-      editorContent = TextEditor.getText()
-      textBuffer = TextEditor.getBuffer()
-
-      if atom.config.get 'linter-languagetool.languagetoolServerPath'
-        lthostname = 'localhost'
-        http = require('http')
-        apipath = '/v2'
-        ltport = 8081
-      else
-        http = require('https')
-        apipath = '/api/v2'
-        lthostname = 'languagetool.org'
-        ltport = 443
-
-      post_data = querystring.stringify getPostDataDict(editorContent)
-
+    
+    new Promise (resolve) ->
+      post_data = getPostDataDict(TextEditor.getText())
+      
       options = {
-        hostname: lthostname
-        path: "#{apipath}/check"
-        port: ltport
-        method: 'POST'
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-          'Accept': 'application/json'
-          'Content-Length': Buffer.byteLength(post_data)
-        }
+        method: 'POST',
+        uri: lthelper.url,
+        form: post_data,
+        json: true
       }
-
-      req = http.request options, (res) ->
-        res.on 'data', (chunk) ->
-          received = received + chunk
-        res.on 'end', ->
-          try
-            jsonObject = JSON.parse received
-          catch error
-            atom.notifications.addError("Invalid output received from LanguageTool server", {detail: received})
-            return Resolve toReturn
-
-          messages = linterMessagesForData(jsonObject, textBuffer, editorPath)
-          Resolve(messages)
-
-      req.write(post_data)
-      req.end()
+      
+      editorPath = TextEditor.getPath()
+      textBuffer = TextEditor.getBuffer()
+      
+      rp(options)
+        .then( (data) ->
+          messages = linterMessagesForData(data, textBuffer, editorPath)
+          resolve(messages)
+        )
+        .catch( (err) ->
+          console.log(err)
+          atom.notifications.addError("Invalid output received from LanguageTool server", {detail: err.message})
+          resolve([])
+        )
