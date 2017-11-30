@@ -90,6 +90,11 @@ module.exports = class LinterProvider
   lint: (TextEditor) ->
     
     new Promise (resolve) ->
+      if not lthelper.ltinfo
+        # Disable the linter if the server is not repoinding
+        resolve([])
+        return
+      
       post_data = getPostDataDict(TextEditor.getText())
       
       options = {
