@@ -42,6 +42,13 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
+      
+  activate: ->
+    lthelper = require './ltserver-helper'
+    
+  deactivate: ->
+    lthelper = require './ltserver-helper'
+    lthelper.destroy()
 
   provideLinter: ->
     LinterProvider = require './linter-provider'

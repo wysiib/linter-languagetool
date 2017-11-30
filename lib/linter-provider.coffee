@@ -3,7 +3,6 @@ querystring = require 'querystring'
 
 
 module.exports = class LinterProvider
-  server_started = false
   categries_map = {
     'CASING': 'error'
     'COLLOCATIONS': 'error'
@@ -33,23 +32,6 @@ module.exports = class LinterProvider
     'WIKIPEDIA': 'info'
   }
 
-  startserver = ->
-    if server_started is false
-      server_started = true
-      ltoptions = ''
-      if atom.config.get 'linter-languagetool.configFilePath'
-        ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
-      ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
-      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer ' + ltoptions +  ' "$@" ', (error, stdout, stderr) ->
-        if error
-          console.error error
-        console.log stdout
-        console.log stderr
-
-        ltserver.stdout.on 'data', (data) ->
-          console.log data
-
-
   lint: (TextEditor) ->
     new Promise (Resolve) ->
       received = ""
@@ -60,7 +42,6 @@ module.exports = class LinterProvider
       textBuffer = TextEditor.getBuffer()
 
       if atom.config.get 'linter-languagetool.languagetoolServerPath'
-        startserver()
         lthostname = 'localhost'
         http = require('http')
         apipath = '/v2'
