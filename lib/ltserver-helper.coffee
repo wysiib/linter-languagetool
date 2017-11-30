@@ -1,4 +1,5 @@
 {BufferedProcess, CompositeDisposable} = require 'atom'
+url = require 'url'
 
 class LTServerHelper
   
@@ -7,25 +8,33 @@ class LTServerHelper
     @ltserver = undefined
     @url = 'https://languagetool.org/api/v2/check'
     
-    if atom.config.get 'linter-languagetool.languagetoolServerPath'
-      @startserver()
+    @handlelanguagetoolServerPathSetting()
     
     # Register for LanguageServer Settings Changes
     @disposables.add atom.config.onDidChange 'linter-languagetool.languagetoolServerPath', ({newValue, oldValue}) =>
-      if newValue
-        @stopserver()
-        @startserver()
-      else
-        @stopserver()
+      @handlelanguagetoolServerPathSetting()
         
     @disposables.add atom.config.onDidChange 'linter-languagetool.configFilePath', ({newValue, oldValue}) =>
-      @stopserver()
-      @startserver()
+      @handlelanguagetoolServerPathSetting()
   
   destroy: ->
     @stopserver()
     @disposables.dispose()
-  
+    
+  handlelanguagetoolServerPathSetting: ->
+    path = atom.config.get 'linter-languagetool.languagetoolServerPath'
+    @stopserver()
+    if path?.endsWith('.jar')
+      # Default local server
+      @url = 'http://localhost:8081/v2/check'
+      @startserver()
+    else if path?.startsWith('http')
+      # Should be an url
+      @url = url.resolve(path, 'v2/check')
+    else
+      # Default to the public server
+      @url = 'https://languagetool.org/api/v2/check'
+       
   startserver: ->
     ltoptions = ''
     if atom.config.get 'linter-languagetool.configFilePath'
@@ -43,11 +52,8 @@ class LTServerHelper
         detached: true,
         stdio: 'ignore'
     })
-    
-    @url = 'http://localhost:8081/v2/check'
-     
+         
   stopserver: ->
     @ltserver?.kill()
-    @url = 'https://languagetool.org/api/v2/check'
     
 module.exports = new LTServerHelper()
