@@ -52,6 +52,7 @@ module.exports = LinterLanguagetool =
   activate: ->
     @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
+    lthelper.init()
     LTInfoView = require './lt-status-view'
     @ltInfo = new LTInfoView()
     

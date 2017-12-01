@@ -93,7 +93,6 @@ module.exports = class LinterProvider
       if not lthelper.ltinfo
         # Disable the linter if the server is not repoinding
         resolve([])
-        return
       
       post_data = getPostDataDict(TextEditor.getText())
       

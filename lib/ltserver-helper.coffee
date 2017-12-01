@@ -4,15 +4,11 @@ rp = require 'request-promise-native'
 
 class LTServerHelper
   PUBLIC_LT_URL = 'https://languagetool.org/api/v2/check'
-  
-  constructor: ->
+    
+  init: ->
     @disposables = new CompositeDisposable
     @emitter = new Emitter
-    @ltserver = undefined
     @url = PUBLIC_LT_URL
-    @ltinfo = undefined
-    
-    @handlelanguagetoolServerPathSetting()
     
     # Register for LanguageServer Settings Changes
     @disposables.add atom.config.onDidChange 'linter-languagetool.languagetoolServerPath', ({newValue, oldValue}) =>
@@ -20,11 +16,15 @@ class LTServerHelper
         
     @disposables.add atom.config.onDidChange 'linter-languagetool.configFilePath', ({newValue, oldValue}) =>
       @handlelanguagetoolServerPathSetting()
-  
+    
+    return @handlelanguagetoolServerPathSetting()
+    
   destroy: ->
     @stopserver()
     @disposables.dispose()
+    @disposables = null
     @emitter.dispose()
+    @emitter = null
     
   onDidChangeLTInfo: (callback) ->
     @emitter.on 'did-change-ltinfo', callback
@@ -44,12 +44,16 @@ class LTServerHelper
       # Default to the public server
       @url = PUBLIC_LT_URL
     # Getting the Serverinfo to check the settings
-    @getServerInfo().then( (info) ->
-      console.log('linter-languagetool ready to lint')
-    ).catch( (error) ->
-      console.log('unable to lint with linter-languagetool')
+    return new Promise ( (resolve, reject) =>
+      @getServerInfo().then( (info) ->
+        console.log('linter-languagetool ready to lint')
+        resolve(info)
+      ).catch( (error) ->
+        console.log('unable to lint with linter-languagetool')
+        reject(error)
+      )
     )
-      
+  
   getServerInfo: ->
     options = {
       method: 'POST',
@@ -112,5 +116,6 @@ class LTServerHelper
          
   stopserver: ->
     @ltserver?.kill()
+    @ltserver = null
     
 module.exports = new LTServerHelper()
