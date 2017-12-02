@@ -1,7 +1,5 @@
 child_process = require 'child_process'
 querystring = require 'querystring'
-net = require 'net'
-{Disposable} = require 'atom'
 
 module.exports = class LinterProvider
   ltserver: null
