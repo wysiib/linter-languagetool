@@ -1,10 +1,18 @@
+LinterProvider = require './linter-provider'
+
 module.exports = LinterLanguagetool =
+  provider: null
   config:
     languagetoolServerPath:
       title: 'Path to local languagetool-server.jar'
       description: 'If given, the linter tries to start a local languagetool server and connect to it. If left blank, the public languagetool API is used instead.'
       type: 'string'
       default: ''
+    languagetoolServerPort:
+      title: 'Port for local languagetool-server.jar'
+      description: 'Sets the port on which the local languagetool server will listen.'
+      type: 'number'
+      default: 8081
     configFilePath:
       title: 'Path to a config file'
       description: 'Path to a configuration file for the LanguageTool server. Can be used to provide the path to the n-gram data to LanugageTool. If given, LanguageTool can detect errors with words that are often confused, like *their* and *there*. See [LanguageTool Wiki](http://wiki.languagetool.org/finding-errors-using-n-gram-data) for more information'
@@ -43,13 +51,19 @@ module.exports = LinterLanguagetool =
       description: 'If enabled the linter will run on every change on the file.'
       default: false
 
+  activate: ->
+    @provider = new LinterProvider()
+
+  deactivate: ->
+    @provider.destroy()
+    @provider = null
+
   provideLinter: ->
-    LinterProvider = require './linter-provider'
-    provider = new LinterProvider()
+    # provider = new LinterProvider()
     return {
       name: 'languagetool'
       scope: 'file'
       lintsOnChange: atom.config.get 'linter-languagetool.lintsOnChange'
       grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
-      lint: provider.lint
+      lint: @provider.lint
     }
