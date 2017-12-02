@@ -1,9 +1,11 @@
 child_process = require 'child_process'
 querystring = require 'querystring'
-
+net = require 'net'
+{Disposable} = require 'atom'
 
 module.exports = class LinterProvider
   server_started = false
+  server_port = 0
   categries_map = {
     'CASING': 'error'
     'COLLOCATIONS': 'error'
@@ -33,23 +35,31 @@ module.exports = class LinterProvider
     'WIKIPEDIA': 'info'
   }
 
-  startserver = ->
-    if server_started is false
-      server_started = true
+  constructor: ->
+    if atom.config.get 'linter-languagetool.languagetoolServerPath'
       ltoptions = ''
       if atom.config.get 'linter-languagetool.configFilePath'
         ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
-      if atom.config.get 'linter-languagetool.languagetoolServerPort'
-        ltoptions = ltoptions + ' --port ' + atom.config.get 'linter-languagetool.languagetoolServerPort'
       ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
-      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer ' + ltoptions +  ' "$@" ', (error, stdout, stderr) ->
-        if error
-          console.error error
-        console.log stdout
-        console.log stderr
 
-        ltserver.stdout.on 'data', (data) ->
+      ltserver = net.createServer (socket) ->
+        console.log("Creating Server")
+        {
+          reader: socket,
+          writer: socket
+        }
+      .on 'error', (err) ->
+        throw err
+
+      ltserver.listen () ->
+        server_port = ltserver.address().port.toString()
+        console.log("Grabbed port: " + server_port)
+        process = child_process.spawn 'java', ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', server_port, ltoptions,'"$@"']
+
+        process.stdout.on 'data', (data) ->
           console.log data
+
+        server_started = true
 
 
   lint: (TextEditor) ->
@@ -62,11 +72,10 @@ module.exports = class LinterProvider
       textBuffer = TextEditor.getBuffer()
 
       if atom.config.get 'linter-languagetool.languagetoolServerPath'
-        startserver()
         lthostname = 'localhost'
         http = require('http')
         apipath = '/v2'
-        ltport = atom.config.get 'linter-languagetool.languagetoolServerPort'
+        ltport = server_port
       else
         http = require('https')
         apipath = '/api/v2'
