@@ -60,7 +60,7 @@ class LTServerHelper
             atom.notifications.addError("""The public languagetool server is
               not responding. The linter will be disabled.""",
               {detail: err.message})
-            reject(err)        
+            reject(err)
           )
       )
     )
