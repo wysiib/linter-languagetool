@@ -22,7 +22,6 @@ class LTStatusView
         
   update: (info) ->
     return if @viewUpdatePending
-    console.log(info)
     @viewUpdatePending = true
     @updateSubscription = atom.views.updateDocument =>
       @viewUpdatePending = false
