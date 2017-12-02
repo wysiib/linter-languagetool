@@ -1,4 +1,7 @@
+LinterProvider = require './linter-provider'
+
 module.exports = LinterLanguagetool =
+  provider: null
   config:
     languagetoolServerPath:
       title: 'Path to local languagetool-server.jar'
@@ -48,13 +51,20 @@ module.exports = LinterLanguagetool =
       description: 'If enabled the linter will run on every change on the file.'
       default: false
 
+  activate: ->
+    @provider = new LinterProvider()
+
+  deactivate: ->
+    console.log("Called destroy in linter-languagetool.coffee")
+    @provider.destroy()
+    @provider = null
+
   provideLinter: ->
-    LinterProvider = require './linter-provider'
-    provider = new LinterProvider()
+    # provider = new LinterProvider()
     return {
       name: 'languagetool'
       scope: 'file'
       lintsOnChange: atom.config.get 'linter-languagetool.lintsOnChange'
       grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
-      lint: provider.lint
+      lint: @provider.lint
     }
