@@ -55,7 +55,6 @@ module.exports = LinterLanguagetool =
     @provider = new LinterProvider()
 
   deactivate: ->
-    console.log("Called destroy in linter-languagetool.coffee")
     @provider.destroy()
     @provider = null
 
