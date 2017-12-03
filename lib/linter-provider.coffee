@@ -97,14 +97,20 @@ module.exports = class LinterProvider
     return messages
 
   lint: (TextEditor) ->
-    
+
     new Promise (resolve) ->
       if not lthelper.ltinfo
         # Disable the linter if the server is not repoinding
         resolve([])
-      
+
+      # Check if the root scope is ignored
+      rootScopeDescriptor = TextEditor.getRootScopeDescriptor()
+      isIgnored = global.grammarManager.isIgnored(rootScopeDescriptor)
+      if isIgnored
+        resolve([])
+
       post_data = getPostDataDict(TextEditor.getText())
-      
+
       options = {
         method: 'POST',
         uri: lthelper.url,

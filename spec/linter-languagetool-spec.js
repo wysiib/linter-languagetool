@@ -4,7 +4,7 @@
 describe('The languagetool-linter for AtomLinter', () => {
   const lint = require('../lib/linter-languagetool').provideLinter().lint;
   const lthelper = require('../lib/ltserver-helper')
-  
+
   beforeEach(() => {
     waitsForPromise(() => {
       return atom.packages.activatePackage("linter-languagetool");
@@ -130,6 +130,22 @@ describe('The languagetool-linter for AtomLinter', () => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
         return lint(editor).then(messages => {
           expect(messages.length).toEqual(1);
+        });
+      });
+    });
+  });
+
+  it('does not lint if the grammar is not in the manager', () => {
+    waitsForPromise(() => {
+      return atom.packages.activatePackage("language-gfm");
+    });
+    // Reset the grammar manager
+    GrammarManager = require('../lib/grammar-manager')
+    global.grammarManager = new GrammarManager()
+    waitsForPromise(() => {
+      return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
+        return lint(editor).then(messages => {
+          expect(messages.length).toEqual(0);
         });
       });
     });
