@@ -48,16 +48,25 @@ module.exports = class LinterProvider
       post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
       
     return post_data_dict
-    
-  linterMessagesForData= (data, textBuffer, editorPath) ->
+
+  linterMessagesForData= (data, TextEditor) ->
     messages = []
-        
+
+    editorPath = TextEditor.getPath()
+    textBuffer = TextEditor.getBuffer()
+
     matches = data["matches"]
     for match in matches
       offset = match['offset']
       length = match['length']
       startPos = textBuffer.positionForCharacterIndex offset
       endPos = textBuffer.positionForCharacterIndex(offset + length)
+
+      # Check for ignore scopes and dont show the message if the scope is ignored
+      scopeDescriptor = TextEditor.scopeDescriptorForBufferPosition(startPos)
+      isIgnored = global.grammarManager.isIgnored(scopeDescriptor)
+      if isIgnored
+        continue
 
       description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
       if match['shortMessage']
@@ -102,13 +111,10 @@ module.exports = class LinterProvider
         form: post_data,
         json: true
       }
-      
-      editorPath = TextEditor.getPath()
-      textBuffer = TextEditor.getBuffer()
-      
+
       rp(options)
         .then( (data) ->
-          messages = linterMessagesForData(data, textBuffer, editorPath)
+          messages = linterMessagesForData(data, TextEditor)
           resolve(messages)
         )
         .catch( (err) ->
