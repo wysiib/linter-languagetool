@@ -44,6 +44,28 @@ if (process.platform === 'darwin') {
     });    
   });
   
+  describe('When the local jar and port is given', () => {
+    
+    beforeEach(() => {
+      atom.config.set('linter-languagetool.languagetoolServerPath','/usr/local/Cellar/languagetool/3.9/libexec/languagetool-server.jar')
+      atom.config.set('linter-languagetool.languagetoolServerPort',8085)
+      waitsForPromise(() => {
+        return lthelper.init()
+      });
+    });
+    
+    afterEach(() => {
+        lthelper.destroy()
+    });
+          
+    it('it starts the service on the given port', () => {
+      expect(lthelper.ltserver).toBeDefined();
+      expect(lthelper.ltserver.process).toBeDefined();
+      expect(lthelper.url).toEqual('http://localhost:8085/v2/check');
+      expect(lthelper.ltinfo).toBeDefined();
+    });    
+  });
+  
   describe('When the local path not exists', () => {
     
     beforeEach(() => {

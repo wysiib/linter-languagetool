@@ -14,12 +14,15 @@ class LTServerHelper
     # Register for LanguageServer Settings Changes
     @disposables.add atom.config.onDidChange 'linter-languagetool.languagetoolServerPath', ({newValue, oldValue}) =>
       @handlelanguagetoolServerPathSetting()
-        
+
     @disposables.add atom.config.onDidChange 'linter-languagetool.configFilePath', ({newValue, oldValue}) =>
       @handlelanguagetoolServerPathSetting()
-    
+
+    @disposables.add atom.config.onDidChange 'linter-languagetool.languagetoolServerPort', ({newValue, oldValue}) =>
+      @handlelanguagetoolServerPathSetting()
+
     return @handlelanguagetoolServerPathSetting()
-    
+
   destroy: ->
     @stopserver()
     @disposables.dispose()
@@ -82,8 +85,10 @@ class LTServerHelper
         public server.""")
         return @useLTServerWithUrl(PUBLIC_LT_URL)
       return new Promise( (resolve, reject) =>
-        @startserver().then(  =>
-          @useLTServerWithUrl('http://localhost:8081/v2/check').then( ->
+        port = atom.config.get('linter-languagetool.languagetoolServerPort')
+        port = 8081 unless port?
+        @startserver(port).then(  =>
+          @useLTServerWithUrl("http://localhost:#{port}/v2/check").then( ->
             resolve()
           )
         ).catch( =>
@@ -119,7 +124,7 @@ class LTServerHelper
         )
       )
     
-  startserver: ->
+  startserver: (port = 8081) ->
     ltoptions = ''
     if atom.config.get 'linter-languagetool.configFilePath'
       ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
@@ -139,7 +144,7 @@ class LTServerHelper
         
       @ltserver = new BufferedProcess({
         command: command
-        args: ['-cp', ltjar, 'org.languagetool.server.HTTPServer', ltoptions]
+        args: ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port, ltoptions]
         options:
           detached: true
         stdout: stdout
