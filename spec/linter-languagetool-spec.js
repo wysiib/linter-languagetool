@@ -121,4 +121,17 @@ describe('The languagetool-linter for AtomLinter', () => {
       });
     });
   });
+
+  it('does not show errors on disabeld scopes by the linter-spell api', () => {
+    waitsForPromise(() => {
+      return atom.packages.activatePackage("language-gfm");
+    });
+    waitsForPromise(() => {
+      return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
+        return lint(editor).then(messages => {
+          expect(messages.length).toEqual(1);
+        });
+      });
+    });
+  });
 });
