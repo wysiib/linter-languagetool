@@ -21,12 +21,6 @@ module.exports = LinterLanguagetool =
       description: 'Sets the port on which the local languagetool server will listen.'
       type: 'number'
       default: 8081
-    grammerScopes:
-      type: 'array'
-      description: 'This preference holds a list of grammar scopes languagetool should be applied to.'
-      default: ['text.tex.latex', 'source.asciidoc', 'source.gfm', 'text.git-commit', 'text.plain', 'text.plain.null-grammar']
-      items:
-        type: 'string'
     preferredVariants:
       type: 'array'
       description: 'List of preferred language variants. The language detector used with language=auto can detect e.g. English, but it cannot decide whether British English or American English is used. Thus this parameter can be used to specify the preferred variants like en-GB and de-AT. Only available with language=auto.'
@@ -97,6 +91,6 @@ module.exports = LinterLanguagetool =
       name: 'languagetool'
       scope: 'file'
       lintsOnChange: atom.config.get 'linter-languagetool.lintsOnChange'
-      grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
+      grammarScopes: ['*']
       lint: provider.lint
     }
