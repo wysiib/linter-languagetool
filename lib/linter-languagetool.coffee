@@ -58,6 +58,11 @@ module.exports = LinterLanguagetool =
     @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
     lthelper.init()
+
+    GrammarManager = require './grammar-manager'
+    global.grammarManager = new GrammarManager()
+    @subscriptions.add(global.grammarManager)
+
     LTInfoView = require './lt-status-view'
     @ltInfo = new LTInfoView()
     
@@ -77,6 +82,13 @@ module.exports = LinterLanguagetool =
     
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
+
+  consumeGrammar: (grammars) ->
+    return global.grammarManager.consumeGrammar(grammars)
+
+  provideGrammar: ->
+    GrammarProvider = require './grammar-provider'
+    return GrammarProvider.provideGrammar()
 
   provideLinter: ->
     LinterProvider = require './linter-provider'
