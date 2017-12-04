@@ -1,3 +1,9 @@
+## 0.7.0
+* option to set URL / port of languagetool server (in addition to jar file)
+* fallback to public server if local server fails
+* startup / shutdown of local server tied to Atom lifecycle
+* all changes in this release thanks to @hesstobi
+
 ## 0.6.1
 * add preference for disabled rules
 

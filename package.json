@@ -1,7 +1,7 @@
 {
   "name": "linter-languagetool",
   "main": "./lib/linter-languagetool",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Checks text using languagetool",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
         "^1.0.0": "consumeStatusBar"
       }
     }
-},
+  },
   "providedServices": {
     "linter-spell-grammar": {
       "versions": {
