@@ -13,6 +13,9 @@ env:
 os:
   - linux
   - osx
+  
+install:
+  - if [ $TRAVIS_OS_NAME = osx ]; then brew install languagetool; fi
 
 ### Generic setup follows ###
 script:

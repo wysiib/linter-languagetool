@@ -1,9 +1,8 @@
-child_process = require 'child_process'
-querystring = require 'querystring'
+rp = require 'request-promise-native'
+lthelper = require './ltserver-helper'
 
 
 module.exports = class LinterProvider
-  server_started = false
   categries_map = {
     'CASING': 'error'
     'COLLOCATIONS': 'error'
@@ -32,116 +31,88 @@ module.exports = class LinterProvider
     'TYPOS': 'error'
     'WIKIPEDIA': 'info'
   }
+  
+  getPostDataDict= (editorContent) ->
+    
+    post_data_dict = {
+      'language': 'auto'
+      'text': editorContent
+      'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
+    }
+    
+    if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
+      post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
+    if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
+      post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
+    if (atom.config.get 'linter-languagetool.disabledRules').length > 0
+      post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
+      
+    return post_data_dict
+    
+  linterMessagesForData= (data, textBuffer, editorPath) ->
+    messages = []
+        
+    matches = data["matches"]
+    for match in matches
+      offset = match['offset']
+      length = match['length']
+      startPos = textBuffer.positionForCharacterIndex offset
+      endPos = textBuffer.positionForCharacterIndex(offset + length)
 
-  startserver = ->
-    if server_started is false
-      server_started = true
-      ltoptions = ''
-      if atom.config.get 'linter-languagetool.configFilePath'
-        ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
-      ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
-      ltserver = child_process.exec 'java -cp ' + ltjar + ' org.languagetool.server.HTTPServer ' + ltoptions +  ' "$@" ', (error, stdout, stderr) ->
-        if error
-          console.error error
-        console.log stdout
-        console.log stderr
+      description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
+      if match['shortMessage']
+        description = "#{match['message']}\n\n#{description}"
+      else
 
-        ltserver.stdout.on 'data', (data) ->
-          console.log data
+      replacements = match['replacements'].map (rep) ->
+        {
+          title: rep.value,
+          position: [startPos, endPos],
+          replaceWith: rep.value,
+        }
+      message = {
+        location: {
+          file: editorPath,
+          position: [startPos, endPos],
+        },
+        severity: categries_map[match['rule']['category']['id']] or 'error'
+        description: description,
+        solutions: replacements,
+        excerpt: match['shortMessage'] or match['message']
+      }
 
+      if match['rule']['urls']
+        message['url'] = match['rule']['urls'][0]['value']
+
+      messages.push message
+    return messages
 
   lint: (TextEditor) ->
-    new Promise (Resolve) ->
-      received = ""
-      toReturn = []
-
-      editorPath = TextEditor.getPath()
-      editorContent = TextEditor.getText()
-      textBuffer = TextEditor.getBuffer()
-
-      if atom.config.get 'linter-languagetool.languagetoolServerPath'
-        startserver()
-        lthostname = 'localhost'
-        http = require('http')
-        apipath = '/v2'
-        ltport = 8081
-      else
-        http = require('https')
-        apipath = '/api/v2'
-        lthostname = 'languagetool.org'
-        ltport = 443
-
-      post_data_dict = {
-        'language': 'auto'
-        'text': editorContent
-        'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
-      }
-
-      if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
-        post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
-      if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
-        post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
-      if (atom.config.get 'linter-languagetool.disabledRules').length > 0
-        post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
-
-      post_data = querystring.stringify post_data_dict
-
+    
+    new Promise (resolve) ->
+      if not lthelper.ltinfo
+        # Disable the linter if the server is not repoinding
+        resolve([])
+      
+      post_data = getPostDataDict(TextEditor.getText())
+      
       options = {
-        hostname: lthostname
-        path: "#{apipath}/check"
-        port: ltport
-        method: 'POST'
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-          'Accept': 'application/json'
-          'Content-Length': Buffer.byteLength(post_data)
-        }
+        method: 'POST',
+        uri: lthelper.url,
+        form: post_data,
+        json: true
       }
-
-      req = http.request options, (res) ->
-        res.on 'data', (chunk) ->
-          received = received + chunk
-        res.on 'end', ->
-          try
-            jsonObject = JSON.parse received
-          catch error
-            atom.notifications.addError("Invalid output received from LanguageTool server", {detail: received})
-            return Resolve toReturn
-
-          matches = jsonObject["matches"]
-          for match in matches
-            offset = match['offset']
-            length = match['length']
-            startPos = textBuffer.positionForCharacterIndex offset
-            endPos = textBuffer.positionForCharacterIndex(offset + length)
-
-            description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
-            if match['shortMessage']
-              description = "#{match['message']}\n\n#{description}"
-            else
-
-            replacements = match['replacements'].map (rep) ->
-              {
-                title: rep.value,
-                position: [startPos, endPos],
-                replaceWith: rep.value,
-              }
-            message = {
-              location: {
-                file: editorPath,
-                position: [startPos, endPos],
-              },
-              severity: categries_map[match['rule']['category']['id']] or 'error'
-              description: description,
-              solutions: replacements,
-              excerpt: match['shortMessage'] or match['message']
-            }
-
-            if match['rule']['urls']
-              message['url'] = match['rule']['urls'][0]['value']
-
-            toReturn.push message
-          Resolve toReturn
-
-      req.write(post_data)
-      req.end()
+      
+      editorPath = TextEditor.getPath()
+      textBuffer = TextEditor.getBuffer()
+      
+      rp(options)
+        .then( (data) ->
+          messages = linterMessagesForData(data, textBuffer, editorPath)
+          resolve(messages)
+        )
+        .catch( (err) ->
+          console.log(err)
+          atom.notifications.addError("Invalid output received from LanguageTool server", {detail: err.message})
+          resolve([])
+        )

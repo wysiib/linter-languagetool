@@ -1,11 +1,20 @@
 "use babel";
 
+
 describe('The languagetool-linter for AtomLinter', () => {
   const lint = require('../lib/linter-languagetool').provideLinter().lint;
-
+  const lthelper = require('../lib/ltserver-helper')
+  
   beforeEach(() => {
     waitsForPromise(() => {
       return atom.packages.activatePackage("linter-languagetool");
+    });
+    waitsForPromise(() => {
+      return new Promise( (resolve) => {
+          lthelper.onDidChangeLTInfo(() => {
+              resolve()
+          });
+      });
     });
   });
 

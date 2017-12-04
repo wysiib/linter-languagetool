@@ -1,15 +1,26 @@
+{CompositeDisposable} = require 'atom'
+
 module.exports = LinterLanguagetool =
   config:
     languagetoolServerPath:
-      title: 'Path to local languagetool-server.jar'
-      description: 'If given, the linter tries to start a local languagetool server and connect to it. If left blank, the public languagetool API is used instead.'
+      title: 'URL of the Languagetool server or path to your local languagetool-server.jar'
+      description: """Set the URL of your Languagetool server.
+        It defaults to the public Languagetool server API.
+        If you give the path to your local languagetool-server.jar,
+        linter tries to start the local languagetool server and connect to it."""
       type: 'string'
-      default: ''
+      default: 'https://languagetool.org/api/'
+      order: 1
     configFilePath:
       title: 'Path to a config file'
       description: 'Path to a configuration file for the LanguageTool server. Can be used to provide the path to the n-gram data to LanugageTool. If given, LanguageTool can detect errors with words that are often confused, like *their* and *there*. See [LanguageTool Wiki](http://wiki.languagetool.org/finding-errors-using-n-gram-data) for more information'
       type: 'string'
       default: ''
+    languagetoolServerPort:
+      title: 'Port for local languagetool-server.jar'
+      description: 'Sets the port on which the local languagetool server will listen.'
+      type: 'number'
+      default: 8081
     grammerScopes:
       type: 'array'
       description: 'This preference holds a list of grammar scopes languagetool should be applied to.'
@@ -42,6 +53,30 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
+      
+  activate: ->
+    @subscriptions = new CompositeDisposable()
+    lthelper = require './ltserver-helper'
+    lthelper.init()
+    LTInfoView = require './lt-status-view'
+    @ltInfo = new LTInfoView()
+    
+  
+  deactivate: ->
+    lthelper = require './ltserver-helper'
+    lthelper?.destroy()
+    
+    @ltInfo?.destroy()
+    @ltInfo = null
+    
+    @statusBarTile?.destroy()
+    @statusBarTile = null
+    
+    @subscriptions?.dispose()
+    @subscriptions = null
+    
+  consumeStatusBar: (statusBar) ->
+    @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
   provideLinter: ->
     LinterProvider = require './linter-provider'

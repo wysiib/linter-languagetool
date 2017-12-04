@@ -18,11 +18,22 @@
   "engines": {
     "atom": ">=1.4.0 <2.0.0"
   },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
+},
   "providedServices": {
     "linter": {
       "versions": {
         "2.0.0": "provideLinter"
       }
     }
+  },
+  "dependencies": {
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5"
   }
 }
