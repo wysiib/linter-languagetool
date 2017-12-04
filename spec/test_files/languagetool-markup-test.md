@@ -1,1 +1,5 @@
-This schouuld lint. But not the :smiley_cat:.
+Diies ist ein Fehler. :smiley_cat: erzeugt keine Fehler. 
+```
+Code
+```
+Hier sollte auch kein Fehler stehen. Und wenn :smiley_cat: im Satz verwendet wird muss auch ein Fehler unterdrückt werden.

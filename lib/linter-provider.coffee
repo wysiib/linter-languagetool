@@ -31,6 +31,9 @@ module.exports = class LinterProvider
     'TYPOS': 'error'
     'WIKIPEDIA': 'info'
   }
+  prev_scopes_ignore_rules = [
+    'DE_CASE'
+  ]
   
   getPostDataDict= (editorContent) ->
     
@@ -67,6 +70,18 @@ module.exports = class LinterProvider
       isIgnored = global.grammarManager.isIgnored(scopeDescriptor)
       if isIgnored
         continue
+
+      scopeDescriptor = TextEditor.scopeDescriptorForBufferPosition(endPos)
+      isIgnored = global.grammarManager.isIgnored(scopeDescriptor)
+      if isIgnored
+        continue
+
+      if match.rule.id in prev_scopes_ignore_rules
+        prevPos = textBuffer.positionForCharacterIndex offset-1
+        scopeDescriptor = TextEditor.scopeDescriptorForBufferPosition(prevPos)
+        isIgnored = global.grammarManager.isIgnored(scopeDescriptor)
+        if isIgnored
+          continue
 
       description = "*#{match['rule']['description']}*\n\n(`ID: #{match['rule']['id']}`)"
       if match['shortMessage']
@@ -108,6 +123,7 @@ module.exports = class LinterProvider
       isIgnored = global.grammarManager.isIgnored(rootScopeDescriptor)
       if isIgnored
         resolve([])
+        return
 
       post_data = getPostDataDict(TextEditor.getText())
 
