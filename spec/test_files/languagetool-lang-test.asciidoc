@@ -1,0 +1,5 @@
+:lang: de-DE 
+
+This is English to force the language auto detection to use English.
+
+Und nun ein deutscher Satz.

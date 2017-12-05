@@ -35,15 +35,21 @@ module.exports = class LinterProvider
     'DE_CASE'
   ]
   
-  getPostDataDict= (editorContent) ->
+  getPostDataDict= (TextEditor) ->
+
+    language = 'auto'
+    if (atom.config.get 'linter-languagetool.obeyFileLangPattern')
+      lanPattern = global.grammarManager.getLanguage(TextEditor)
+      if global.grammarManager.getLanguage(TextEditor)
+        language = lanPattern[0].replace /_/, '-'
     
     post_data_dict = {
-      'language': 'auto'
-      'text': editorContent
+      'language': language
+      'text': TextEditor.getText()
       'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
     }
     
-    if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
+    if (atom.config.get 'linter-languagetool.preferredVariants').length > 0 and language is 'auto'
       post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
     if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
       post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
@@ -77,7 +83,7 @@ module.exports = class LinterProvider
         continue
 
       if match.rule.id in prev_scopes_ignore_rules
-        prevPos = textBuffer.positionForCharacterIndex offset-1
+        prevPos = textBuffer.positionForCharacterIndex offset-2
         scopeDescriptor = TextEditor.scopeDescriptorForBufferPosition(prevPos)
         isIgnored = global.grammarManager.isIgnored(scopeDescriptor)
         if isIgnored
@@ -125,7 +131,7 @@ module.exports = class LinterProvider
         resolve([])
         return
 
-      post_data = getPostDataDict(TextEditor.getText())
+      post_data = getPostDataDict(TextEditor)
 
       options = {
         method: 'POST',

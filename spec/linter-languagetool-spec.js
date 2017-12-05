@@ -122,7 +122,7 @@ describe('The languagetool-linter for AtomLinter', () => {
     });
   });
 
-  it('does not show errors on disabeld scopes by the linter-spell api', () => {
+  it('does not show errors on disabled scopes by the linter-spell api', () => {
     waitsForPromise(() => {
       return atom.packages.activatePackage("language-gfm");
     });
@@ -134,7 +134,7 @@ describe('The languagetool-linter for AtomLinter', () => {
       });
     });
   });
-
+  
   it('does not lint if the grammar is not in the manager', () => {
     waitsForPromise(() => {
       return atom.packages.activatePackage("language-gfm");
@@ -146,6 +146,20 @@ describe('The languagetool-linter for AtomLinter', () => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
         return lint(editor).then(messages => {
           expect(messages.length).toEqual(0);
+        });
+      });
+    });
+  });
+  
+  it('it obeys the language pattern if defined in the grammuar', () => {
+    waitsForPromise(() => {
+      return atom.packages.activatePackage("language-asciidoc");
+    });
+    atom.config.set('linter-languagetool.obeyFileLangPattern',true)
+    waitsForPromise(() => {
+      return atom.workspace.open(__dirname + '/test_files/languagetool-lang-test.asciidoc').then(editor => {
+        return lint(editor).then(messages => {
+          expect(messages.length).toEqual(12);
         });
       });
     });

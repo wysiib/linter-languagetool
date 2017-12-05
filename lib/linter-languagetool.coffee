@@ -47,6 +47,10 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
+    obeyFileLangPattern:
+      type: 'boolean'
+      descriptopm: 'TODO'
+      default: false
       
   activate: ->
     @subscriptions = new CompositeDisposable()
