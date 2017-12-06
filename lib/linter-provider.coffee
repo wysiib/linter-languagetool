@@ -123,6 +123,7 @@ module.exports = class LinterProvider
       if not lthelper.ltinfo
         # Disable the linter if the server is not repoinding
         resolve([])
+        return
 
       # Check if the root scope is ignored
       rootScopeDescriptor = TextEditor.getRootScopeDescriptor()
