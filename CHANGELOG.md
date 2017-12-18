@@ -1,3 +1,6 @@
+## 0.7.1
+* bugfixes
+
 ## 0.7.0
 * option to set URL / port of languagetool server (in addition to jar file)
 * fallback to public server if local server fails
