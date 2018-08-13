@@ -31,27 +31,27 @@ module.exports = class LinterProvider
     'TYPOS': 'error'
     'WIKIPEDIA': 'info'
   }
-  
+
   getPostDataDict= (editorContent) ->
-    
+
     post_data_dict = {
       'language': 'auto'
       'text': editorContent
       'motherTongue': atom.config.get 'linter-languagetool.motherTongue'
     }
-    
+
     if (atom.config.get 'linter-languagetool.preferredVariants').length > 0
       post_data_dict['preferredVariants'] = atom.config.get('linter-languagetool.preferredVariants').join()
     if (atom.config.get 'linter-languagetool.disabledCategories').length > 0
       post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
     if (atom.config.get 'linter-languagetool.disabledRules').length > 0
       post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
-      
+
     return post_data_dict
-    
+
   linterMessagesForData= (data, textBuffer, editorPath) ->
     messages = []
-        
+
     matches = data["matches"]
     for match in matches
       offset = match['offset']
@@ -88,25 +88,25 @@ module.exports = class LinterProvider
     return messages
 
   lint: (TextEditor) ->
-    
+
     new Promise (resolve) ->
       if not lthelper.ltinfo
-        # Disable the linter if the server is not repoinding
+        # Disable the linter if the server is not responding
         resolve([])
         return
-      
+
       post_data = getPostDataDict(TextEditor.getText())
-      
+
       options = {
         method: 'POST',
         uri: lthelper.url,
         form: post_data,
         json: true
       }
-      
+
       editorPath = TextEditor.getPath()
       textBuffer = TextEditor.getBuffer()
-      
+
       rp(options)
         .then( (data) ->
           messages = linterMessagesForData(data, textBuffer, editorPath)
