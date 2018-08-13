@@ -49,32 +49,36 @@ module.exports = LinterLanguagetool =
       type: 'string'
       description: 'A language code of the user\'s native language, enabling false friends checks for some language pairs.'
       default: require('electron').remote.app.getLocale()
+    jvmOptions:
+      type: 'string'
+      description: 'JVM options to be passed to the LanguageTool server binary upon startup.'
+      default: ''
     lintsOnChange:
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
-      
+
   activate: ->
     @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
     lthelper.init()
     LTInfoView = require './lt-status-view'
     @ltInfo = new LTInfoView()
-    
-  
+
+
   deactivate: ->
     lthelper = require './ltserver-helper'
     lthelper?.destroy()
-    
+
     @ltInfo?.destroy()
     @ltInfo = null
-    
+
     @statusBarTile?.destroy()
     @statusBarTile = null
-    
+
     @subscriptions?.dispose()
     @subscriptions = null
-    
+
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
