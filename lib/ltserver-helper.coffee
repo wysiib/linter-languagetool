@@ -143,7 +143,7 @@ class LTServerHelper
         if /Server started/.test(output)
           resolve()
       exit = (output) ->
-        # Usaly a port error, thus an other server is already running
+        # Usually a port error, thus an other server is already running
         resolve()
 
       @ltserver = new BufferedProcess({
