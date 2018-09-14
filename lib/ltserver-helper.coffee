@@ -92,6 +92,7 @@ class LTServerHelper
             resolve()
           )
         ).catch( =>
+          console.log("exception")
           @stopserver()
           atom.notifications.addWarning("""Unable to start the local
           server. Using the public server.""")
@@ -134,9 +135,9 @@ class LTServerHelper
     if process.platform is 'win32'
       command = 'javaw'
 
-    jvmoptions = ''
+    jvmoptions = []
     if atom.config.get 'linter-languagetool.jvmOptions'
-      jvmoptions = atom.config.get 'linter-langugetool.jvmOptions'
+      jvmoptions = [atom.config.get 'linter-langugetool.jvmOptions']
 
     return new Promise( (resolve) =>
       stdout = (output) ->
@@ -148,7 +149,7 @@ class LTServerHelper
 
       @ltserver = new BufferedProcess({
         command: command
-        args: [jvmoptions, '-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port, ltoptions]
+        args: jvmoptions.concat ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port, ltoptions]
         options:
           detached: true
         stdout: stdout
