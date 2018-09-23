@@ -55,7 +55,7 @@ module.exports = class LinterProvider
       post_data_dict['disabledCategories'] = atom.config.get('linter-languagetool.disabledCategories').join()
     if (atom.config.get 'linter-languagetool.disabledRules').length > 0
       post_data_dict['disabledRules'] = atom.config.get('linter-languagetool.disabledRules').join()
-      
+
     return post_data_dict
 
   linterMessagesForData= (data, TextEditor) ->
@@ -121,7 +121,7 @@ module.exports = class LinterProvider
 
     new Promise (resolve) ->
       if not lthelper.ltinfo
-        # Disable the linter if the server is not repoinding
+        # Disable the linter if the server is not responding
         resolve([])
         return
 

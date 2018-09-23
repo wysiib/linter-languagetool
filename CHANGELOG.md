@@ -1,3 +1,6 @@
+## 0.8.0
+* add preference for JVM options (see issue #30)
+
 ## 0.7.1
 * bugfixes
 
