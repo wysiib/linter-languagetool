@@ -21,6 +21,11 @@ module.exports = LinterLanguagetool =
       description: 'Sets the port on which the local languagetool server will listen.'
       type: 'number'
       default: 8081
+    fallbackToPublicApi:
+      title: 'Fallback to public Languagetool server API'
+      description: 'Fallback to public Languagetool server in case the local languagetool-server.jar fails to start up or is missing.'
+      type: 'boolean'
+      default: false
     grammerScopes:
       type: 'array'
       description: 'This preference holds a list of grammar scopes languagetool should be applied to.'

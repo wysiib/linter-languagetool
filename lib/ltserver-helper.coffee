@@ -51,7 +51,7 @@ class LTServerHelper
             not responding. The linter will be disabled.""",
             {detail: err.message})
           reject(err)
-        else
+        else if atom.config.get 'linter-languagetool.fallbackToPublicApi'
           # Some local error, use the public server
           atom.notifications.addWarning("""There is some problem with your
             langugetool server. The linter will use the public url.""",

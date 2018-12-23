@@ -70,6 +70,7 @@ if (process.platform === 'darwin') {
 
     beforeEach(() => {
       atom.config.set('linter-languagetool.languagetoolServerPath','/languagetool-server.jar')
+      atom.config.set('linter-languagetool.fallbackToPublicApi',true)
       waitsForPromise(() => {
         return lthelper.init();
       });
@@ -79,7 +80,7 @@ if (process.platform === 'darwin') {
         lthelper.destroy();
     });
 
-    it('it shows a warning and uses the public server', () => {
+    it('it shows a warning and uses the public server if the preference is set accordingly', () => {
       noti = atom.notifications.getNotifications();
       expect(noti[0].type).toEqual("warning");
       expect(lthelper.url).toEqual('https://languagetool.org/api/v2/check');
@@ -124,6 +125,7 @@ if (process.platform === 'darwin') {
 
     beforeEach(() => {
       atom.config.set('linter-languagetool.languagetoolServerPath','http://localhost:8082')
+      atom.config.set('linter-languagetool.fallbackToPublicApi',true)
       waitsForPromise(() => {
         return lthelper.init()
       });
@@ -133,7 +135,7 @@ if (process.platform === 'darwin') {
         lthelper.destroy()
     });
 
-    it('it shows a warning and uses the public server', () => {
+    it('it shows a warning and uses the public server if the preference is set accordingly', () => {
       noti = atom.notifications.getNotifications();
       expect(noti[0].type).toEqual("warning");
       expect(lthelper.url).toEqual('https://languagetool.org/api/v2/check');
