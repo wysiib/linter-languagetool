@@ -1,3 +1,6 @@
+## 0.9.0
+* disable fallback to public languagetool api for privacy reasons
+
 ## 0.8.0
 * add preference for JVM options (see issue #30)
 

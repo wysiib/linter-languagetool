@@ -21,6 +21,17 @@ module.exports = LinterLanguagetool =
       description: 'Sets the port on which the local languagetool server will listen.'
       type: 'number'
       default: 8081
+    fallbackToPublicApi:
+      title: 'Fallback to public Languagetool server API'
+      description: 'Fallback to public Languagetool server in case the local languagetool-server.jar fails to start up or is missing.'
+      type: 'boolean'
+      default: false
+    grammerScopes:
+      type: 'array'
+      description: 'This preference holds a list of grammar scopes languagetool should be applied to.'
+      default: ['text.tex.latex', 'source.asciidoc', 'source.gfm', 'text.git-commit', 'text.plain', 'text.plain.null-grammar']
+      items:
+        type: 'string'
     preferredVariants:
       type: 'array'
       description: 'List of preferred language variants. The language detector used with language=auto can detect e.g. English, but it cannot decide whether British English or American English is used. Thus this parameter can be used to specify the preferred variants like en-GB and de-AT. Only available with language=auto.'
@@ -51,20 +62,11 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
-    obeyFileLangPattern:
-      type: 'boolean'
-      descriptopm: 'TODO'
-      default: false
-      
+
   activate: ->
     @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
     lthelper.init()
-
-    GrammarManager = require './grammar-manager'
-    global.grammarManager = new GrammarManager()
-    @subscriptions.add(global.grammarManager)
-
     LTInfoView = require './lt-status-view'
     @ltInfo = new LTInfoView()
 
@@ -85,13 +87,6 @@ module.exports = LinterLanguagetool =
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
-  consumeGrammar: (grammars) ->
-    return global.grammarManager.consumeGrammar(grammars)
-
-  provideGrammar: ->
-    GrammarProvider = require './grammar-provider'
-    return GrammarProvider.provideGrammar()
-
   provideLinter: ->
     LinterProvider = require './linter-provider'
     provider = new LinterProvider()
@@ -99,6 +94,6 @@ module.exports = LinterLanguagetool =
       name: 'languagetool'
       scope: 'file'
       lintsOnChange: atom.config.get 'linter-languagetool.lintsOnChange'
-      grammarScopes: ['*']
+      grammarScopes: atom.config.get 'linter-languagetool.grammerScopes'
       lint: provider.lint
     }
