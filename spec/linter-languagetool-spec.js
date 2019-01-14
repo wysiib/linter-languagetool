@@ -2,7 +2,7 @@
 
 
 describe('The languagetool-linter for AtomLinter', () => {
-  const lint = require('../lib/linter-languagetool').provideLinter().lint;
+  const LT = require('../lib/linter-languagetool')
   const lthelper = require('../lib/ltserver-helper')
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('The languagetool-linter for AtomLinter', () => {
   it('checks the example text taken from the languagetool homepage', () => {
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-hp-test.txt').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(8);
 
           expect(messages[0].severity).toBeDefined();
@@ -42,7 +42,7 @@ describe('The languagetool-linter for AtomLinter', () => {
     waitsForPromise(() => {
       atom.config.set('linter-languagetool.preferredVariants',['en-GB'])
       return atom.workspace.open(__dirname + '/test_files/languagetool-hp-test.txt').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(9);
 
           expect(messages[0].severity).toBeDefined();
@@ -62,7 +62,7 @@ describe('The languagetool-linter for AtomLinter', () => {
   it('checks the resulting severity for different rule categories (de)', () => {
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-cat-test-de.txt').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(19);
 
           expect(messages[0].severity).toBeDefined();
@@ -111,7 +111,7 @@ describe('The languagetool-linter for AtomLinter', () => {
   it('checks the resulting severity for different rule categories (en)', () => {
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-cat-test-en.txt').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(2);
           expect(messages[0].severity).toBeDefined();
           expect(messages[0].severity).toEqual('error');
@@ -128,7 +128,7 @@ describe('The languagetool-linter for AtomLinter', () => {
     });
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(1);
         });
       });
@@ -141,10 +141,10 @@ describe('The languagetool-linter for AtomLinter', () => {
     });
     // Reset the grammar manager
     GrammarManager = require('../lib/grammar-manager')
-    global.grammarManager = new GrammarManager()
+    LT.linterProvider.grammarManager = new GrammarManager()
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(0);
         });
       });
@@ -158,7 +158,7 @@ describe('The languagetool-linter for AtomLinter', () => {
     atom.config.set('linter-languagetool.obeyFileLangPattern',true)
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-lang-test.asciidoc').then(editor => {
-        return lint(editor).then(messages => {
+        return LT.provideLinter().lint(editor).then(messages => {
           expect(messages.length).toEqual(12);
         });
       });
