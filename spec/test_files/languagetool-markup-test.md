@@ -1,10 +1,15 @@
-Diies ist ein Fehler. :smiley_cat: erzeugt keine Fehler. 
+Diies ist ein Fehler. Eine :smiley_cat: erzeugt keine Fehler.
 ```
 Code
 ```
-Hier sollte auch kein Fehler stehen. Und wenn :smiley_cat: im Satz verwendet wird muss auch ein Fehler unterdrückt werden.
+Hier sollte auch kein Fehler stehen.
 ```
 Test
 ```
-dieser Fehler wird leider nicht erkannt.
+dieser Fehler wird nun auch erkannt.
+``` md
+Teest
+```
+Nach der Umgebung ist es aber ein Fehler.
+
  

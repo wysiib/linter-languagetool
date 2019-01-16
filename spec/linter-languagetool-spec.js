@@ -129,7 +129,7 @@ describe('The languagetool-linter for AtomLinter', () => {
     waitsForPromise(() => {
       return atom.workspace.open(__dirname + '/test_files/languagetool-markup-test.md').then(editor => {
         return LT.provideLinter().lint(editor).then(messages => {
-          expect(messages.length).toEqual(1);
+          expect(messages.length).toEqual(3);
         });
       });
     });
@@ -164,4 +164,5 @@ describe('The languagetool-linter for AtomLinter', () => {
       });
     });
   });
+  
 });
