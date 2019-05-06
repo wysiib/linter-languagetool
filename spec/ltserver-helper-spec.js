@@ -26,7 +26,7 @@ if (process.platform === 'darwin') {
   describe('When the local jar is given', () => {
 
     beforeEach(() => {
-      atom.config.set('linter-languagetool.languagetoolServerPath','/usr/local/Cellar/languagetool/4.3/libexec/languagetool-server.jar')
+      atom.config.set('linter-languagetool.languagetoolServerPath','/usr/local/Cellar/languagetool/4.5/libexec/languagetool-server.jar')
       waitsForPromise(() => {
         return lthelper.init()
       });
@@ -47,7 +47,7 @@ if (process.platform === 'darwin') {
   describe('When the local jar and port is given', () => {
 
     beforeEach(() => {
-      atom.config.set('linter-languagetool.languagetoolServerPath','/usr/local/Cellar/languagetool/4.3/libexec/languagetool-server.jar')
+      atom.config.set('linter-languagetool.languagetoolServerPath','/usr/local/Cellar/languagetool/4.5/libexec/languagetool-server.jar')
       atom.config.set('linter-languagetool.languagetoolServerPort',8085)
       waitsForPromise(() => {
         return lthelper.init()
