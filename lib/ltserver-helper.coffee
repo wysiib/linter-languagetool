@@ -126,9 +126,6 @@ class LTServerHelper
       )
 
   startserver: (port = 8081) ->
-    ltoptions = ''
-    if atom.config.get 'linter-languagetool.configFilePath'
-      ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
     ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
 
     command = 'java'
@@ -138,6 +135,10 @@ class LTServerHelper
     jvmoptions = []
     if atom.config.get 'linter-languagetool.jvmOptions'
       jvmoptions = [atom.config.get 'linter-langugetool.jvmOptions']
+
+    args = jvmoptions.concat ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port]
+    if atom.config.get 'linter-languagetool.configFilePath'
+      args.push ['--config', atom.config.get 'linter-languagetool.configFilePath']...
 
     return new Promise( (resolve) =>
       stdout = (output) ->
@@ -149,7 +150,7 @@ class LTServerHelper
 
       @ltserver = new BufferedProcess({
         command: command
-        args: jvmoptions.concat ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port, ltoptions]
+        args: args
         options:
           detached: true
         stdout: stdout
