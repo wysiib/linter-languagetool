@@ -65,6 +65,12 @@ class LTServerHelper
               {detail: err.message})
             reject(err)
           )
+        else
+          atom.notifications.addError("""There is some problem with your
+            langugetool server. The linter will not use the public url and
+            hence might not work correctly.""",
+            {detail: err.message})
+          reject(err)
       )
     )
 
@@ -140,13 +146,16 @@ class LTServerHelper
     if atom.config.get 'linter-languagetool.configFilePath'
       args.push ['--config', atom.config.get 'linter-languagetool.configFilePath']...
 
-    return new Promise( (resolve) =>
+    return new Promise( (resolve, reject) =>
       stdout = (output) ->
         if /Server started/.test(output)
           resolve()
+      stderr = (output) ->
+
       exit = (output) ->
-        # Usually a port error, thus an other server is already running
-        resolve()
+        # Can be a for example port errors, if another server is already running
+        # or config file not found errors.
+        reject()
 
       @ltserver = new BufferedProcess({
         command: command
@@ -154,6 +163,7 @@ class LTServerHelper
         options:
           detached: true
         stdout: stdout
+        stderr: stderr
         exit: exit
       })
     )

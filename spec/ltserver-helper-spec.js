@@ -142,4 +142,60 @@ if (process.platform === 'darwin') {
       expect(lthelper.ltinfo).toBeDefined();
     });
   });
+
+  describe('When the local jar and a config file is given', () => {
+
+    beforeEach(() => {
+      atom.config.set(
+        'linter-languagetool.languagetoolServerPath',
+        '/usr/local/Cellar/languagetool/4.5/libexec/languagetool-server.jar'
+      )
+
+      atom.config.set(
+        'linter-languagetool.configFilePath',
+        __dirname + '/test_files/sample_languagetool.cfg'
+      )
+
+      waitsForPromise(() => {
+        return lthelper.init()
+      });
+    });
+
+    afterEach(() => {
+        lthelper.destroy()
+    });
+
+    it('it uses settings from config file', () => {
+      expect(lthelper.ltserver).toBeDefined();
+      expect(lthelper.ltserver.process).toBeDefined();
+      expect(lthelper.ltinfo).toBeDefined();
+    });
+  });
+
+  describe('When the local jar and a non-existent config file is given', () => {
+
+    beforeEach(() => {
+      atom.config.set(
+        'linter-languagetool.languagetoolServerPath',
+        '/usr/local/Cellar/languagetool/4.5/libexec/languagetool-server.jar'
+      )
+
+      atom.config.set(
+        'linter-languagetool.configFilePath',
+        __dirname + '/test_files/sample_languagetool.txt'
+      )
+
+      waitsForPromise(() => {
+        return lthelper.init()
+      });
+    });
+
+    afterEach(() => {
+        lthelper.destroy()
+    });
+
+    it('it refuses to start the local server', () => {
+      expect(lthelper.ltserver).toBeUndefined();
+    });
+  });
 }
