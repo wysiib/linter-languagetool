@@ -65,6 +65,12 @@ class LTServerHelper
               {detail: err.message})
             reject(err)
           )
+        else
+          atom.notifications.addError("""There is some problem with your
+            langugetool server. The linter will not use the public url and
+            hence might not work correctly.""",
+            {detail: err.message})
+          reject(err)
       )
     )
 
@@ -126,9 +132,6 @@ class LTServerHelper
       )
 
   startserver: (port = 8081) ->
-    ltoptions = ''
-    if atom.config.get 'linter-languagetool.configFilePath'
-      ltoptions = ltoptions + ' --config ' + atom.config.get 'linter-languagetool.configFilePath'
     ltjar = atom.config.get 'linter-languagetool.languagetoolServerPath'
 
     command = 'java'
@@ -139,20 +142,28 @@ class LTServerHelper
     if atom.config.get 'linter-languagetool.jvmOptions'
       jvmoptions = [atom.config.get 'linter-langugetool.jvmOptions']
 
-    return new Promise( (resolve) =>
+    args = jvmoptions.concat ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port]
+    if atom.config.get 'linter-languagetool.configFilePath'
+      args.push ['--config', atom.config.get 'linter-languagetool.configFilePath']...
+
+    return new Promise( (resolve, reject) =>
       stdout = (output) ->
         if /Server started/.test(output)
           resolve()
+      stderr = (output) ->
+
       exit = (output) ->
-        # Usually a port error, thus an other server is already running
-        resolve()
+        # Can be a for example port errors, if another server is already running
+        # or config file not found errors.
+        reject()
 
       @ltserver = new BufferedProcess({
         command: command
-        args: jvmoptions.concat ['-cp', ltjar, 'org.languagetool.server.HTTPServer', '--port', port, ltoptions]
+        args: args
         options:
           detached: true
         stdout: stdout
+        stderr: stderr
         exit: exit
       })
     )
