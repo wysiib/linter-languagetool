@@ -1,3 +1,6 @@
+## 0.10.0
+* add option to provide config file (thanks @dmohns)
+
 ## 0.9.0
 * disable fallback to public languagetool api for privacy reasons
 
