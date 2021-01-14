@@ -26,6 +26,11 @@ module.exports = LinterLanguagetool =
       description: 'Fallback to public Languagetool server in case the local languagetool-server.jar fails to start up or is missing.'
       type: 'boolean'
       default: false
+    disableStatusIcon:
+      title: 'Disables Icon in bottom bar'
+      description: ''
+      type: 'boolean'
+      default: false
     grammerScopes:
       type: 'array'
       description: 'This preference holds a list of grammar scopes languagetool should be applied to.'
@@ -85,7 +90,8 @@ module.exports = LinterLanguagetool =
     @subscriptions = null
 
   consumeStatusBar: (statusBar) ->
-    @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
+    if not atom.config.get 'linter-languagetool.disableStatusIcon'
+      @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
   provideLinter: ->
     LinterProvider = require './linter-provider'
