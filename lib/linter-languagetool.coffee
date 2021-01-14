@@ -27,8 +27,8 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       default: false
     disableStatusIcon:
-      title: 'Disables Icon in bottom bar'
-      description: ''
+      title: 'Disables Icon in staus bar'
+      description: 'Removes the LanguageTool status icon from the status bar. Atom has to be restarted for this setting to take effect.'
       type: 'boolean'
       default: false
     grammerScopes:
