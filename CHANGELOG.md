@@ -1,3 +1,6 @@
+## 0.11.0
+* add option to disable status bar icon (thanks @mfbehrens99)
+
 ## 0.10.0
 * add option to provide config file (thanks @dmohns)
 
