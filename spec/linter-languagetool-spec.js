@@ -48,7 +48,7 @@ describe('The languagetool-linter for AtomLinter', () => {
           expect(messages[0].severity).toBeDefined();
           expect(messages[0].severity).toEqual('error');
           expect(messages[0].excerpt).toBeDefined();
-          expect(messages[0].excerpt).toEqual("Possible spelling mistake. ‘colored‘ is American English.");
+          expect(messages[0].excerpt).toEqual("Possible spelling mistake. ‘colored’ is American English.");
           expect(messages[0].location.file).toBeDefined();
           expect(messages[0].location.file).toMatch(/.+languagetool-hp-test\.txt$/);
           expect(messages[0].location.position).toBeDefined();
