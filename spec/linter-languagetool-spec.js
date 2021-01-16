@@ -4,7 +4,7 @@
 describe('The languagetool-linter for AtomLinter', () => {
   const lint = require('../lib/linter-languagetool').provideLinter().lint;
   const lthelper = require('../lib/ltserver-helper')
-  
+
   beforeEach(() => {
     waitsForPromise(() => {
       return atom.packages.activatePackage("linter-languagetool");
@@ -27,7 +27,7 @@ describe('The languagetool-linter for AtomLinter', () => {
           expect(messages[0].severity).toBeDefined();
           expect(messages[0].severity).toEqual('error');
           expect(messages[0].excerpt).toBeDefined();
-          expect(messages[0].excerpt).toEqual('This sentence does not start with an uppercase letter');
+          expect(messages[0].excerpt).toEqual('This sentence does not start with an uppercase letter.');
           expect(messages[0].location.file).toBeDefined();
           expect(messages[0].location.file).toMatch(/.+languagetool-hp-test\.txt$/);
           expect(messages[0].location.position).toBeDefined();
@@ -100,7 +100,7 @@ describe('The languagetool-linter for AtomLinter', () => {
           expect(messages[16].severity).toBeDefined();
           expect(messages[16].severity).toEqual('warning');
           expect(messages[17].severity).toBeDefined();
-          expect(messages[17].severity).toEqual('warning');
+          expect(messages[17].severity).toEqual('error');
           expect(messages[18].severity).toBeDefined();
           expect(messages[18].severity).toEqual('error');
         });
